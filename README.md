@@ -1,2 +1,5 @@
-# transcribe-media
-Skill de transcrição para Cursor/Claude Code: qualquer vídeo, áudio ou URL, bruto primeiro, arquivo + texto.
+# Transcribe Media
+
+Skill de transcrição para Cursor, Claude Code e Cloud Agent.
+
+O contrato do projeto está em [project.md](project.md).

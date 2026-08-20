@@ -151,7 +151,7 @@ Tudo que chama modelo usa **uma** variável: `OPENAI_API_KEY`.
 | Uso | Modelo (inicial) |
 |---|---|
 | Transcrição de áudio | `whisper-1` |
-| Melhoria com IA | um chat model barato/rápido da OpenAI (definir na implementação) |
+| Melhoria com IA | `gpt-5.6-luna` (`reasoning.effort=none`) |
 | Tradução / resumo | o mesmo chat model |
 
 Sem a chave, a skill não inventa transcrição. Diz: falta `OPENAI_API_KEY`. Legendas via `yt-dlp` podem funcionar sem a chave; Whisper, melhoria, tradução e resumo não.

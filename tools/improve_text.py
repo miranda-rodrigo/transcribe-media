@@ -30,7 +30,7 @@ def improve(text: str, prompt_file: str | None) -> dict:
                 "Edite só este trecho, sem resumir.\n\n"
                 f"{chunk}"
             )
-        pieces.append(common.chat_complete(system, user, temperature=0.2))
+        pieces.append(common.chat_complete(system, user))
     improved = "\n\n".join(pieces).strip()
     return {
         "text": improved,
@@ -41,7 +41,7 @@ def improve(text: str, prompt_file: str | None) -> dict:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Edita o bruto com um chat model barato/rápido.")
+    parser = argparse.ArgumentParser(description="Edita o bruto com gpt-5.6-luna (reasoning none).")
     parser.add_argument("--input", "-i")
     parser.add_argument("--text")
     parser.add_argument("--prompt-file", default=None)

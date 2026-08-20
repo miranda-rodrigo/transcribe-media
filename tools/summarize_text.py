@@ -19,22 +19,22 @@ def summarize(text: str, language: str | None) -> dict:
     raw = (text or "").strip()
     if not raw:
         common.fail("Texto vazio; não há o que resumir.")
-    chunks = common.chunk_text(raw, max_chars=16000)
+    chunks = common.chunk_text(raw)
     if len(chunks) == 1:
         user = raw
         if language:
             user = f"Idioma do resumo: {language}.\n\n{raw}"
-        summary = common.chat_complete(SYSTEM, user, temperature=0.2)
+        summary = common.chat_complete(SYSTEM, user)
     else:
         partial = []
         for i, chunk in enumerate(chunks):
             user = f"Resuma o trecho {i + 1} de {len(chunks)}:\n\n{chunk}"
-            partial.append(common.chat_complete(SYSTEM, user, temperature=0.2))
+            partial.append(common.chat_complete(SYSTEM, user))
         joined = "\n\n".join(partial)
         final_user = "Una estes resumos parciais num resumo curto único:\n\n" + joined
         if language:
             final_user = f"Idioma do resumo: {language}.\n\n{final_user}"
-        summary = common.chat_complete(SYSTEM, final_user, temperature=0.2)
+        summary = common.chat_complete(SYSTEM, final_user)
     return {
         "text": summary.strip(),
         "model": common.CHAT_MODEL,

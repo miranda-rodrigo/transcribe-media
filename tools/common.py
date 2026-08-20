@@ -14,8 +14,11 @@ from pathlib import Path
 from typing import Any
 
 WHISPER_MODEL = "whisper-1"
-CHAT_MODEL = "gpt-4o-mini"
+CHAT_MODEL = "gpt-5.6-luna"
+REASONING_EFFORT = "none"
 MAX_WHISPER_BYTES = 24 * 1024 * 1024
+# Luna tem ~1M de contexto; ficar abaixo do limiar de preço de long-context (~272k tokens).
+CHAT_CHUNK_CHARS = 200_000
 
 VIDEO_EXTS = {".mp4", ".webm", ".mkv", ".mov", ".avi"}
 AUDIO_EXTS = {".mp3", ".m4a", ".wav", ".ogg", ".opus", ".webm", ".aac", ".flac"}
@@ -299,23 +302,74 @@ def openai_client():
     return OpenAI()
 
 
-def chat_complete(system: str, user: str, *, temperature: float = 0.2) -> str:
+def _response_text(response: Any) -> str:
+    text = getattr(response, "output_text", None)
+    if text and str(text).strip():
+        return str(text).strip()
+    chunks: list[str] = []
+    for item in getattr(response, "output", None) or []:
+        for part in getattr(item, "content", None) or []:
+            piece = getattr(part, "text", None)
+            if piece is None and isinstance(part, dict):
+                piece = part.get("text")
+            if piece:
+                chunks.append(str(piece))
+    return "\n".join(chunks).strip()
+
+
+def chat_complete(system: str, user: str, *, temperature: float | None = None) -> str:
+    """Chama gpt-5.6-luna. temperature é ignorado: Luna não usa sampling clássico."""
+    del temperature
     client = openai_client()
-    response = client.chat.completions.create(
-        model=CHAT_MODEL,
-        temperature=temperature,
-        messages=[
+    content = ""
+    if hasattr(client, "responses"):
+        try:
+            try:
+                response = client.responses.create(
+                    model=CHAT_MODEL,
+                    instructions=system,
+                    input=user,
+                    reasoning={"effort": REASONING_EFFORT},
+                )
+            except TypeError:
+                response = client.responses.create(
+                    model=CHAT_MODEL,
+                    instructions=system,
+                    input=user,
+                )
+            content = _response_text(response)
+        except (TypeError, AttributeError):
+            content = ""
+    if not content:
+        messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
-        ],
-    )
-    content = response.choices[0].message.content
-    if not content or not content.strip():
+        ]
+        try:
+            response = client.chat.completions.create(
+                model=CHAT_MODEL,
+                messages=messages,
+                reasoning_effort=REASONING_EFFORT,
+            )
+        except TypeError:
+            try:
+                response = client.chat.completions.create(
+                    model=CHAT_MODEL,
+                    messages=messages,
+                    extra_body={"reasoning": {"effort": REASONING_EFFORT}},
+                )
+            except TypeError:
+                response = client.chat.completions.create(
+                    model=CHAT_MODEL,
+                    messages=messages,
+                )
+        content = (response.choices[0].message.content or "").strip()
+    if not content:
         fail("O modelo devolveu resposta vazia.")
-    return content.strip()
+    return content
 
 
-def chunk_text(text: str, max_chars: int = 12000) -> list[str]:
+def chunk_text(text: str, max_chars: int = CHAT_CHUNK_CHARS) -> list[str]:
     text = (text or "").strip()
     if len(text) <= max_chars:
         return [text] if text else []

@@ -32,7 +32,7 @@ Rodar com `python3 tools/<nome>.py`. Diretório das tools precisa estar importá
 | `transcribe_audio.py` | Whisper API (`whisper-1`), chunk se > ~24 MB |
 | `normalize_text.py` | `.txt` / `.srt` / `.vtt` → bruto |
 | `cleanup_text.py` | Limpeza sem IA |
-| `improve_text.py` | Melhoria com IA (`gpt-4o-mini` + `references/refine-prompt.md`) |
+| `improve_text.py` | Melhoria com IA (`gpt-5.6-luna`, `reasoning.effort=none` + `references/refine-prompt.md`) |
 | `translate_text.py` | Tradução; bruto intacto |
 | `summarize_text.py` | Resumo **além** da transcrição |
 | `write_output.py` | Grava `transcripts/<slug>/` e devolve prévia |
@@ -162,7 +162,7 @@ Antes da tool que precisa:
 
 Se a tool devolver `ok: false` com `missing` e `install_without_asking: false`, **pergunte**. Não rode `pip` / `apt` sozinho.
 
-Modelo de chat: `gpt-4o-mini`. Whisper: `whisper-1`.
+Modelo de chat: `gpt-5.6-luna` com `reasoning.effort=none` (melhoria, tradução, resumo). Whisper: `whisper-1`.
 
 ## Fora de escopo
 

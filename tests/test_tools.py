@@ -250,6 +250,14 @@ class CommonTests(unittest.TestCase):
         self.assertTrue((TOOLS / "cleanup_text.py").is_file())
         self.assertTrue((ROOT / "references" / "refine-prompt.md").is_file())
 
+    def test_chat_model_is_luna(self):
+        self.assertEqual(common.CHAT_MODEL, "gpt-5.6-luna")
+        self.assertEqual(common.REASONING_EFFORT, "none")
+
+    def test_chat_chunks_stay_under_long_context_surcharge(self):
+        self.assertGreaterEqual(common.CHAT_CHUNK_CHARS, 100_000)
+        self.assertLess(common.CHAT_CHUNK_CHARS, 1_000_000)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -28,7 +28,7 @@ def translate(text: str, target_lang: str) -> dict:
             f"Traduza o trecho a seguir para o idioma `{code}` ({target_lang}).\n"
             f"Parte {i + 1} de {len(chunks)}.\n\n{chunk}"
         )
-        pieces.append(common.chat_complete(SYSTEM, user, temperature=0.2))
+        pieces.append(common.chat_complete(SYSTEM, user))
     return {
         "text": "\n\n".join(pieces).strip(),
         "target_language": code,

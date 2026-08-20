@@ -142,7 +142,7 @@ transcribe-media/
 
 Cada tool faz uma coisa e devolve dado estruturado (texto, path, meta). A skill chama na ordem do fluxo. Nenhuma tool “melhora” o bruto por conta própria.
 
-`SKILL.md` ainda não existe. Este `project.md` é o contrato. A implementação vem depois.
+`SKILL.md` orquestra as tools. Este `project.md` continua o contrato.
 
 ## Chave
 

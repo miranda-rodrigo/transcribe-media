@@ -1,0 +1,2 @@
+# Runtime Python da skill. Não instalar sem o usuário pedir.
+openai>=1.40.0
